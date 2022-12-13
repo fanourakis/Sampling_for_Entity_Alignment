@@ -353,7 +353,7 @@ class RDGCN(BasicModel):
         self.local_name_vectors = None
         self.entity_local_name_dict = None
         self.entities = None
-        self.word_embed = '../../datasets/wiki-news-300d-1M.vec'
+        self.word_embed = 'wiki-news-300d-1M.vec'
 
     def init(self):
         self.entities = self.kgs.kg1.entities_set | self.kgs.kg2.entities_set
@@ -369,11 +369,12 @@ class RDGCN(BasicModel):
         if name_attribute_list is None:
             if 'D_Y' in self.args.training_data:
                 name_attribute_list = {'skos:prefLabel', 'http://dbpedia.org/ontology/birthName'}
+                print("name_attribute_list")
             elif 'D_W' in self.args.training_data:
                 name_attribute_list = {'http://www.wikidata.org/entity/P373', 'http://www.wikidata.org/entity/P1476'}
-            elif 'modified_rrea' in self.args.training_data:
-                print("bbc_attrs")
-                name_attribute_list = {'http://xmlns.com/foaf/0.1/name', 'rdfs:label'}
+            # elif 'modified_rrea' in self.args.training_data:
+            #     print("bbc_attrs")
+            #     name_attribute_list = {'http://xmlns.com/foaf/0.1/name', 'rdfs:label'}
             else:
                 name_attribute_list = {}
 
@@ -427,6 +428,11 @@ class RDGCN(BasicModel):
         names.iloc[:, 2] = names.iloc[:, 2].str.replace(r'[{}]+'.format(string.punctuation), '').str.split(' ')
         # load word embedding
         with open(self.word_embed, 'r') as f:
+
+            # comment 2 lines below, uncomment the 3rd line and dim = 300 for .json
+            # f.seek(0)
+            # w = f.read(10 - 0)
+            
             w = f.readlines()
             w = pd.Series(w[1:])
 
@@ -520,9 +526,10 @@ class RDGCN(BasicModel):
 
         test_ent_lists = self.kgs.test_entities1
         
-        rest_12, _, _, TTA_flag, update_sim_lists, performance = test(test_ent_lists, "test", embeds1, embeds2, None, self.args.top_k, self.args.test_threads_num,
+        rest_12, _, _, TTA_flag, update_sim_lists, performance = test(self.kgs, test_ent_lists, "test", embeds1, embeds2, None, self.args.top_k, self.args.test_threads_num,
                              metric=self.args.eval_metric, normalize=self.args.eval_norm, csls_k=0, accurate=True)
-        test(test_ent_lists, "test", embeds1, embeds2, None, self.args.top_k, self.args.test_threads_num,
+        
+        test(self.kgs, test_ent_lists, "test", embeds1, embeds2, None, self.args.top_k, self.args.test_threads_num,
              metric=self.args.eval_metric, normalize=self.args.eval_norm, csls_k=self.args.csls, accurate=True)
         if save:
             ent_ids_rest_12 = [(self.kgs.test_entities1[i], self.kgs.test_entities2[j]) for i, j in rest_12]

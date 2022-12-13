@@ -49,8 +49,8 @@ def test_WVA(model):
               weight2 * rv_ent_embeds2 + \
               weight3 * av_ent_embeds2
     print('wvag test results:')
-    hits1_12, mrr_12 = eva.valid(embeds1, embeds2, None, model.args.top_k, model.args.test_threads_num,
-                                 normalize=True)
+    hits1_12, mrr_12 = eva.valid("valid", None, embeds1, embeds2, None, model.args.top_k, model.args.test_threads_num,
+                                 metric=model.args.eval_metric, normalize=True)
     del embeds1, embeds2
     gc.collect()
     return mrr_12
@@ -115,8 +115,8 @@ def valid_WVA(model):
               weight2 * rv_ent_embeds2 + \
               weight3 * av_ent_embeds2
     print('wvag valid results:')
-    hits1_12, mrr_12 = eva.valid(embeds1, embeds2, None, model.args.top_k, model.args.test_threads_num,
-                                 normalize=True)
+    hits1_12, mrr_12 = eva.valid("valid", None, embeds1, embeds2, None, model.args.top_k, model.args.test_threads_num,
+                                 metric=model.args.eval_metric, normalize=True)
 
     del nv_ent_embeds1, rv_ent_embeds1, av_ent_embeds1
     del nv_ent_embeds2, rv_ent_embeds2, av_ent_embeds2
@@ -144,8 +144,9 @@ def valid_temp(model, embed_choice='avg', w=(1, 1, 1)):
     print(embed_choice, 'valid results:')
     embeds1 = ent_embeds[model.kgs.valid_entities1,]
     embeds2 = ent_embeds[model.kgs.valid_entities2 + model.kgs.test_entities2,]
-    hits1_12, mrr_12, TTA_flag = eva.valid(embeds1, embeds2, None, model.args.top_k, model.args.test_threads_num,
-                                 normalize=True)
+    test_ent_lists = model.kgs.test_entities1
+    hits1_12, mrr_12, TTA_flag = eva.valid(model.kgs, test_ent_lists, "valid", None, embeds1, embeds2, None, model.args.top_k, model.args.test_threads_num,
+                                 metric=model.args.eval_metric, normalize=True, csls_k=0, accurate=False)
     del embeds1, embeds2
     gc.collect()
     return mrr_12
@@ -179,6 +180,7 @@ def conv(attr_hs, attr_as, attr_vs, dim, feature_map_size=2, kernel_size=[2, 4],
 def read_word2vec(file_path, vector_dimension):
     print('\n', file_path)
     word2vec = dict()
+    print("oe")
     with open(file_path, 'r', encoding='utf-8') as file:
         for line in file:
             line = line.strip('\n').split(' ')
@@ -187,6 +189,7 @@ def read_word2vec(file_path, vector_dimension):
             v = np.array(list(map(float, line[1:])), dtype=np.float32)
             word2vec[line[0]] = v
     file.close()
+    print("ok")
     return word2vec
 
 
@@ -414,7 +417,7 @@ class MultiKE(BasicModel):
         # cleaned_KG2 = [v for (_, _, v) in cleaned_attribute_triples_list1]
         # with open("literal_similarity_multiKE/"+self.args.training_data+"/cleaned_KG2.pickle", 'wb') as f2:
         #     pickle.dump(cleaned_KG2, f2)
-
+        
         literal_encoder = LiteralEncoder(self.literal_list, word2vec, self.args, 300)
         self.literal_vectors_mat = literal_encoder.encoded_literal_vector
         assert self.literal_vectors_mat.shape[0] == len(self.literal_list)
