@@ -1,7 +1,0 @@
-python3 -u ../run_experiment.py \
-        --method PARIS\
-        --root_dataset ./SUSIE_datasets/D_W_15K_V1_sampled\
-        --dataset conf_3_only_p_RDGCN\
-        --dataset_division 721_5fold\
-        --out_folder ./results\
-        --use_func > test.log

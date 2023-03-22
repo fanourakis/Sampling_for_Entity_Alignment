@@ -15,6 +15,12 @@ cd RDGCN
 conda env create --file install/OpenEA.yml -n openea_env
 ```
 
+### Creating conda environment for PARIS:
+```bash
+cd PARIS
+conda env create --file install/entity_match.yml -n entity_match
+```
+
 ## Execution Examples
 
 ### For sampling:
@@ -70,4 +76,32 @@ or
 ```bash
 cd run
 python main_from_args_wo_attr.py args/sampled_multike_args_15K.json (for sampled datasets)
+```
+
+### For running PARIS:
+
+```bash
+cd src/experiments
+mkdir results
+python3 -u ../run_experiment.py \
+        --method PARIS\
+        --root_dataset "root of dataset folder"\
+        --dataset "configuration_name"\
+        --dataset_division 721_5fold\
+        --out_folder ./results\
+        --use_func > test.log
+```
+
+or
+
+```bash
+cd src/experiments
+mkdir results
+python3 -u ../run_experiment.py \
+        --method PARIS\
+        --root_dataset "root of dataset folder"\
+        --dataset original\
+        --dataset_division 721_5fold\
+        --out_folder ./results\
+        --use_func > test.log
 ```
