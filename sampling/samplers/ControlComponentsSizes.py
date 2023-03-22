@@ -13,12 +13,19 @@ class ControlComponentsSizes:
     @staticmethod
     def get_curr_node(comps_dict, disconnected):
         
+        # size threshold of definition
+        t = 1
+
         if len(disconnected) != 0:
             curr_node = np.random.choice(disconnected)
             disconnected.remove(curr_node)
         else:
             keys = list(comps_dict.keys())
-            curr_key = np.random.choice(keys)
+            keys_above_t = []
+            for key in keys:
+                if key >= t:
+                    keys_above_t.append(key)
+            curr_key = np.random.choice(keys_above_t)
             curr_node = np.random.choice(list(comps_dict[curr_key]))
 
         return curr_node, disconnected
