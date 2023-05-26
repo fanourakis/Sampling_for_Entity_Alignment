@@ -1,6 +1,7 @@
 # Structural Bias in Knowledge Graphs for the Entity Alignment Task
 
 The source code of the paper:
+
 N. Fanourakis, V. Efthymiou, V. Christophides, D. Kotzinos, E. Pitoura, K. Stefanidis. Structural Bias in Knowledge Graphs for the Entity Alignment Task. ESWC 2023 [[paper](https://link.springer.com/chapter/10.1007/978-3-031-33455-9_5)]
 
 ## Getting Started
